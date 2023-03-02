@@ -56,6 +56,8 @@ ColWidth = [5, 11, 57, 32, 14, 26, 9, 10, 9, 25]
 
 OutDir = "СПЕЦ"
 Prefix = "\@_"
+OutDir1 = "ИЗ_PDF"
+Prefix1 = "\@_"
 
 Prew=['Дорога:', 'Объект:' , 'Пусковой комплекс:','Номер документа:', 'Раздел проекта:','Проект:','Проекти-ровщик:','Другое:']
 
@@ -178,31 +180,40 @@ def InsFirst0(nMYLIST):
          nMYLIST[i].insert(0,"")
 
 
-def ParsingOnePDF():
+def ParsingOnePDF(_PDFT):
     MYLIST = [["", "", "", "", "", "", "", "", "", "", "", "", "", ""],
               ["", "", "", "", "", "", "", "", "", "", "", "", "", ""],
               ["", "", "", "", "", "", "", "", "", "", "", "", "", ""]]
+
     OutRows = 1
-    MaxStr =7
+    MaxStr =9
     OutStringP = ["", "", "", "", "", "", "", "", "", ""]
 #    for i in range(500):
         #MYLIST.append(range(0, 12))
 #        MYLIST.append(["", "", "", "", "", "", "", "", "", ""])
 #    for i in range(0, 500):
 #        print(MYLIST[i])
-    print (rows, len (PDFT),len (PDFT.iloc[0]))
-    for i in range(0, len (PDFT) -1):
+
+    rows = len(_PDFT)
+    print (rows, len (_PDFT),len (_PDFT.iloc[0]),'------------------------')
+
+
+    for i in range(0, len (_PDFT) -1):
         # Здесь нужно внимательно посмотреть не до 7 а до скольки ?
-        for j in range(0, MaxStr):
+        for j in range(0, MaxStr+1):
             # print ("индексы [", i,j ,']')
-            OutStringP[j] = str(PDFT.iloc[i,  j])
+            OutStringP[j] = str(_PDFT.iloc[i,  j])
             FlagMusor=0
 #  чистим мусор по контенту
             for L in range( 0,len(Musor)):
                 if (OutStringP[j] == Musor[L] ):
                     OutStringP[j] = ''
                     FlagMusor=1
-# если в строке был мусор - чистим строку совсем
+                if (len (OutStringP[j])> 300):
+                    OutStringP[j] = ''
+                    FlagMusor=1
+
+                # если в строке был мусор - чистим строку совсем
             if(FlagMusor==1):
                 for L in range( 0,MaxStr):
                     OutStringP[j] = ''
@@ -222,38 +233,41 @@ def ParsingOnePDF():
     DelFirst0(MYLIST)
     InsFirst0(MYLIST)
     InsFirst0(MYLIST)
+    #  Правильный вариант
+    # ###############################
 #   определяем в каком столбце больше всего записей -  это столбец 2 "наименование"
-    CountStrok = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for i in range(0, OutRows):
-        for j in range(0, MaxStr):
-            if MYLIST[i][j] !='':
-                CountStrok[j]+=1
-    print(CountStrok,GetNumColSTring(CountStrok))
-#  Правильный вариант
-    if GetNumColSTring(CountStrok)==0 :
-        InsFirst0(MYLIST)
-        InsFirst0(MYLIST)
+#    CountStrok = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+#    for i in range(0, OutRows):
+#        for j in range(0, MaxStr):
+#            if MYLIST[i][j] !='':
+#                CountStrok[j]+=1
+#
+#    print(CountStrok,GetNumColSTring(CountStrok))
 
-    if GetNumColSTring(CountStrok)==1 :
-        InsFirst0(MYLIST)
-
-    if (GetNumColSTring(CountStrok) == 3):
-        DelFirst0(MYLIST)
-    if (GetNumColSTring(CountStrok) == 4):
-        DelFirst0(MYLIST)
-        DelFirst0(MYLIST)
-    if (GetNumColSTring(CountStrok) == 5):
-        DelFirst0(MYLIST)
-        DelFirst0(MYLIST)
-        DelFirst0(MYLIST)
-    if (GetNumColSTring(CountStrok) == 6):
-        DelFirst0(MYLIST)
-        DelFirst0(MYLIST)
-        DelFirst0(MYLIST)
-        DelFirst0(MYLIST)
-
+#     if GetNumColSTring(CountStrok)==0 :
+#         InsFirst0(MYLIST)
+#         InsFirst0(MYLIST)
+#
+#     if GetNumColSTring(CountStrok)==1 :
+#         InsFirst0(MYLIST)
+#
+#     if (GetNumColSTring(CountStrok) == 3):
+#         DelFirst0(MYLIST)
+#     if (GetNumColSTring(CountStrok) == 4):
+#         DelFirst0(MYLIST)
+#         DelFirst0(MYLIST)
+#     if (GetNumColSTring(CountStrok) == 5):
+#         DelFirst0(MYLIST)
+#         DelFirst0(MYLIST)
+#         DelFirst0(MYLIST)
+#     if (GetNumColSTring(CountStrok) == 6):
+#         DelFirst0(MYLIST)
+#         DelFirst0(MYLIST)
+#         DelFirst0(MYLIST)
+#         DelFirst0(MYLIST)
+##############################
     PrintShapka('PDF')
-    #    сюда помещу вырезание квадрата
+    #
 
 
 
@@ -277,10 +291,23 @@ def ParsingOnePDF():
     #    выделяем номер в первый столбец
     for i in range(0, OutRows):
          MYLIST[i][1] = CutNumFromStringBegin(MYLIST[i][2])
-         if(MYLIST[i][1]!=MYLIST[i][2]):
-            MYLIST[i][2] = MYLIST[i][2].replace(MYLIST[i][1],'')
-         else:
-             MYLIST[i][1] !=''
+    for i in range(0, OutRows):
+        if (MYLIST[i][1] == MYLIST[i][2]) & (MYLIST[i][1]!='' ):
+            del MYLIST[i][2]
+        if (MYLIST[i][1]=='2.9'):
+            print ('---БЛЯТЬ !----',MYLIST[i][0],MYLIST[i][1],MYLIST[i][2],MYLIST[i][3],MYLIST[i][4],)
+
+        if (MYLIST[i][2] == '') & (MYLIST[i][1]!='' ):
+            del MYLIST[i][2]
+    # if(MYLIST[i][1]!=MYLIST[i][2]):
+         #    print(MYLIST[i][1],MYLIST[i][2])
+         #    MYLIST[i][2] = MYLIST[i][2].replace(MYLIST[i][1],'')
+         #
+         # else:
+         #     MYLIST[i][1] !=''
+
+    #  нужно как то убрать дублирование  столбцов
+    # когда номер уже ыл отлдельно
     #   объеденяем строчки и пытаемся вытащить то что улетело )))
     for i in range(0, len (MYLIST)-6):
       #
@@ -290,10 +317,10 @@ def ParsingOnePDF():
                 if (MYLIST[k][1] == ''):
                     # Сначала следует проверить ???  а нет ли справа числа нормального ?
                     if (CutNumFromStringBegin(MYLIST[k][3])!= '') and (CutNumFromStringBegin(MYLIST[k][3])!= ' ') :
-                        print (CutNumFromStringBegin(MYLIST[k][3]))
-                        MYLIST[k].pop(0)
-                        MYLIST[k][1] = CutNumFromStringBegin(MYLIST[k][2])
-                        MYLIST[i][2] = MYLIST[i][2].replace(MYLIST[i][1], '')
+                        print (CutNumFromStringBegin(MYLIST[k][3]),"!_!_!")
+                        # MYLIST[k].pop(0)
+                        # MYLIST[k][1] = CutNumFromStringBegin(MYLIST[k][2])
+                        # MYLIST[i][2] = MYLIST[i][2].replace(MYLIST[i][1], '')
                     else:
                         MYLIST[i][2] = MYLIST[i][2] + "\n"+MYLIST[k][2]
                         MYLIST[k][2]=''
@@ -322,7 +349,7 @@ def ParsingOnePDF():
     #    Переписываем наш массив в выходной файл экселя
     for i in range(0, len(MYLIST)):
         print(MYLIST[i])
-        for j in range(0, MaxStr):
+        for j in range(1, MaxStr):
             OutCell = OutSheet.cell(row=i+12, column=j+1)
             OutCell.value = MYLIST[i ][j]
             #  Границы, Шрифт, расположение
@@ -473,6 +500,8 @@ for InputFilename in  XLSX_files :
     print('Обрабатываем ' + InputFilename)
     OutputFilename = OutDir + Prefix + InputFilename
     OutputFilename = OutputFilename.replace("xlsm", "xlsx")
+
+
     if ".xlsm" in InputFilename:
         InpColumn = InpColumnSEP
         # for  N in range(0,len(InpColumn)):
@@ -483,7 +512,7 @@ for InputFilename in  XLSX_files :
         #     InpColumn[N] = InpColumnASFS[N]
 
 #    print(OutputFilename)
-# читаем excel-файл
+#    читаем excel-файл
     try:
         wb1 = openpyxl.load_workbook(InputFilename)
         sheet = wb1.active
@@ -525,21 +554,65 @@ for InputFilename in  PDF_files :
     print('Обрабатываем ' + InputFilename)
     OutputFilename = OutDir + Prefix + InputFilename
     OutputFilename = OutputFilename.replace("pdf", "xlsx")
+    OutputFilenamePDFXLS = OutDir1 + Prefix1 + InputFilename
+    OutputFilenamePDFXLS = OutputFilename.replace("pdf", "xls")
     InpColumn = InpColumnPDF
 
 # читаем pdf-файл
     try:
 
         # читаем pdf
+
         pdf_tables = tabula.read_pdf(InputFilename,
                                      #                  Y(30)   X   Y1  X1
-                                     pages='all', area=[30,50,720,1000],
+                                     # 'Это я пытался границы установить
+                                      pages='all',
+#                                     area=[10,10,800,1000],
+#                                     area=[30,50,720,1000],
+                                     #   а это мультитаб
+                                    # pandas_options={'header': None, 'error_bad_lines': True},
                                       multiple_tables=True)
-        #  multiple_tables = False)
+        #          multiple_tables = False)
+        # -----   Складываем всех в одну  ------------------------------+++++
+#        PDF_ALL = pdf_tables[0]
+#        for OnF    in pdf_tables:
+#            PDF_ALL = PDF_ALL.append(OnF)
+        PDF_ALL = pd.concat(pdf_tables, axis=0 , ignore_index  =False)
+
+        #print(PDF_ALL)
+        # -----   выводим в эксель   ------------------------------+++++
+        try:
+           os.mkdir(OutDir1)
+        except FileExistsError:
+            print('каталог уже существует')
+        # PDF_ALL.to_excel(OutputFilenamePDFXLS)
+        PDF_ALL.to_excel(OutDir1 + '\\' +InputFilename+'_.xlsx')
+        print(OutputFilenamePDFXLS)
+        #-----   ЭТО ПРОСТО ПЕЧАТЬ  ------------------------------+++++
+
+        for o in range (0,len(PDF_ALL)):
+            for j in range(0, len(PDF_ALL.iloc[o]) if len(PDF_ALL.iloc[o])<10 else 10):
+                PDFSTR[j] = str(PDF_ALL.iloc[o, j])
+
+            print (PDFSTR)
+
+        #-----   ЭТО ВЫВОД В ФАЙЛ ВСЕ ХРЕНИ ------------------------------+++++
+
+
         ind=0
-        for z    in pdf_tables:
-            ind +=1
-            z.to_excel(str(ind) + 'X.xlsx')
+        for z  in pdf_tables:
+            wbOut = Workbook()
+            # grab the active worksheet
+            OutSheet = wbOut.active
+            if len(z) > 1 :
+                ind +=1
+                z.to_excel(str(ind) + 'X.xlsx')
+                OR = ParsingOnePDF(z)
+                # записываем
+                print('Сохраняем ',  str(ind) + 'X.xlsx')
+                wbOut.save( str(ind) + 'Z.xlsx')
+
+
         # Convert into Excel File
         # pdf_tables[0].to_excel('1.xlsx')
         print ('ВСЕГО ТАБЛИЦ: ', len (pdf_tables))
@@ -554,40 +627,60 @@ for InputFilename in  PDF_files :
                     PDFSTR[j] = str(PDFT.iloc[o, j])
                 print (PDFSTR)
 
-        wbOut = Workbook()
-        # grab the active worksheet
-        OutSheet = wbOut.active
+        #------------------------------------------------------------------------+++
+
+        #-----   ЭТО ВЫВОД В ФАЙЛ ВСЕ ХРЕНИ ------------------------------+++++
+        # ind=0
+        # for z    in pdf_tables:
+        #     ind +=1
+        #     z.to_excel(str(ind) + 'X.xlsx')
+        # # Convert into Excel File
+        # # pdf_tables[0].to_excel('1.xlsx')
+        # print ('ВСЕГО ТАБЛИЦ: ', len (pdf_tables))
+        # NTab = 0
+        #
+        # for PDFT in pdf_tables:
+        #     NTab+=1
+        #     print ("таблица=",NTab,"СТРОК=",len(PDFT),"СТОЛБЦОВ=",len(PDFT.iloc[0]))
+        #
+        #     for o in range (0,len(PDFT)):
+        #         for j in range(0, len(PDFT.iloc[o])):
+        #             PDFSTR[j] = str(PDFT.iloc[o, j])
+        #         print (PDFSTR)
+        #------------------------------------------------------------------------+++
 
         # печатаем шапку
-###########        PrintShapka('PDF')
+        PrintShapka('PDF')
+        PDFT = PDF_ALL
+        rows = len (PDF_ALL)
         # парсим
-        if(len(pdf_tables)>0):
-            rows = len (pdf_tables[0])-1
-            PDFT=pdf_tables[0]
+#        if(len(pdf_tables)>0):
+#            rows = len (pdf_tables[0])-1
+#            PDFT=pdf_tables[0]
             # PDFT = PDFT.append( ['--', '--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--','--',])
-            for z in pdf_tables:
-                PDFT=z
+#            for z in pdf_tables:
+#                PDFT=z
             #     PDFT = PDFT.append(z)
 
             #        print (InpColumn)
-#######     OR = ParsingOneFile('PDF')
-#                OR = ParsingOnePDF()
+            #OR = ParsingOneFile('PDF')
+        OR = ParsingOnePDF(PDF_ALL)
         # записываем
-            print('Сохраняем ' + OutputFilename)
+        print('Сохраняем ' + OutputFilename)
 
-            try:
-                os.mkdir(OutDir)
-            except FileExistsError:
-                print('каталог уже существует')
-            OutCell = OutSheet.cell(row=OR, column=2)
+        try:
+           os.mkdir(OutDir)
+        except FileExistsError:
+            print('каталог уже существует')
+        OutCell = OutSheet.cell(row=OR, column=2)
         # OutCell.value = "Обязательно сверьте полученный результат с исходным докуметом.  (c)GTSS @MAA  62115"
 
         # Сохранение выходного файла
-            try:
-                NY+=1
-                wbOut.save(str(NY)+OutputFilename)
-            except:
-                print('немогу записать')
+        try:
+
+            wbOut.save(OutputFilename)
+        except FileExistsError:
+            print('немогу записать')
 
 
     except FileExistsError:
